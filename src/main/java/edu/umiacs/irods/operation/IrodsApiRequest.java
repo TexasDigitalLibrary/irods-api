@@ -16,7 +16,8 @@ import edu.umiacs.irods.api.pi.RError_PI;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Send a high-level irods api request message. The message consists of an 
@@ -36,7 +37,7 @@ public class IrodsApiRequest
     private RError_PI resultError;
     private InputStream resultStream;
     private long resultByteCount;
-    private static final Logger LOG = Logger.getLogger(IrodsApiRequest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IrodsApiRequest.class);
 
     public IrodsApiRequest(ApiNumberEnum apiNumber, IRodsPI body,
             BitstreamCallback bs)

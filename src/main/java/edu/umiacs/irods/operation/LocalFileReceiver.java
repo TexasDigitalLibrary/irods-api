@@ -7,7 +7,8 @@ package edu.umiacs.irods.operation;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
 public class LocalFileReceiver implements BulkFileHandler
 {
 
-    private static final Logger LOG = Logger.getLogger(LocalFileReceiver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalFileReceiver.class);
     private File baseDirectory;
     private RandomAccessFile raf;
 

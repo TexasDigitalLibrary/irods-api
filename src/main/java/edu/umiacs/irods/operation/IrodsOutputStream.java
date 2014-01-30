@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An input stream that uses the irods streaming put command. This is the most
@@ -34,7 +35,7 @@ import org.apache.log4j.Logger;
  */
 public class IrodsOutputStream extends OutputStream {
 
-    private static final Logger LOG = Logger.getLogger(IrodsOutputStream.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IrodsOutputStream.class);
     private OutputStream os;
     private long length;
     private IOException closeException;

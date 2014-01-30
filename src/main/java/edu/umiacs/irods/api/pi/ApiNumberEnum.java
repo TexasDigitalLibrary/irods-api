@@ -59,7 +59,7 @@ public enum ApiNumberEnum
     DATA_OBJ_REPL_AN(610, DataObjInp_PI.class, false, TransStat_PI.class, false),
     DATA_COPY_AN(611),//, DataCopyInp_PI.class, false, null, false),
     DATA_OBJ_LSEEK201_AN(612),
-    DATA_OBJ_COPY_AN(613),
+    DATA_OBJ_COPY_AN(613, DataObjCopyInp_PI.class, false, null, false),
     SIMPLE_QUERY_AN(614),
     DATA_OBJ_UNLINK_AN(615, DataObjInp_PI.class, false, null, false),
     COLL_CREATE201_AN(616, CollInp_PI.class, false, null, false),

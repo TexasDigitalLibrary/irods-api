@@ -4,7 +4,8 @@
  */
 package edu.umiacs.irods.api.pi;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Server-side response for message header. Big difference is the open ended
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
 public class MsgHeaderResponse_PI implements IRodsPI
 {
 
-    private static final Logger LOG = Logger.getLogger(MsgHeaderResponse_PI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MsgHeaderResponse_PI.class);
     private int intInfo;
     private long bsLen;
     private int errorLen;

@@ -19,7 +19,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A resultset-like interface for the returned irods queries. It assumes that
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class QueryResult {
 
-    private static final Logger LOG = Logger.getLogger(QueryResult.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QueryResult.class);
     private IRodsConnection connection;
     private GenQueryEnum[] columnOrder;
     private List<Map<GenQueryEnum, String>> rowValues =

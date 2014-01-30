@@ -4,7 +4,8 @@
  */
 package edu.umiacs.irods.api.pi;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <MsgHeader_PI>
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
 public class MsgHeaderRequest_PI implements IRodsPI
 {
 
-    private static final Logger LOG = Logger.getLogger(MsgHeaderRequest_PI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MsgHeaderRequest_PI.class);
     private ApiNumberEnum intInfo;
     private long bsLen;
     private int errorLen;

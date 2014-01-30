@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +31,7 @@ public class UnknownSizeOutputStream extends OutputStream {
 
     private IRodsConnection connection;
     private int fd;
-    private static final Logger LOG = Logger.getLogger(UnknownSizeOutputStream.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UnknownSizeOutputStream.class);
 
     public UnknownSizeOutputStream(IRodsConnection connection, String path,
             String resource) throws IOException {

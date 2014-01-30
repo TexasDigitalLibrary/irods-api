@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,7 +33,7 @@ import org.apache.log4j.Logger;
  */
 public class BulkFileSaver {
 
-    private static final Logger LOG = Logger.getLogger(BulkFileSaver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BulkFileSaver.class);
     private ConnectOperation co;
     private int opCount;
     private String irodsPath;

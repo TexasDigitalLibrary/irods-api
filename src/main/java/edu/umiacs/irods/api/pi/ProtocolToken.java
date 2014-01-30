@@ -6,7 +6,8 @@ package edu.umiacs.irods.api.pi;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to parse the XML tags received from irods
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
 public class ProtocolToken
 {
 
-    private static final Logger LOG = Logger.getLogger(ProtocolToken.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProtocolToken.class);
     private static int openChar = '<';
     private static int closeChar = '>';
     private String name;

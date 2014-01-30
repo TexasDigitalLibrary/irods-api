@@ -16,7 +16,8 @@ import edu.umiacs.irods.api.pi.StartupPack_PI;
 import edu.umiacs.irods.api.pi.VersionEnum;
 import edu.umiacs.irods.api.pi.Version_PI;
 import java.io.IOException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A container for holding an irods connection and connection information. It will cache a connection and 
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
 public class ConnectOperation {
 
     private static final Logger LOG =
-            Logger.getLogger(ConnectOperation.class);
+            LoggerFactory.getLogger(ConnectOperation.class);
     private String host;
     private int port;
     private String username;

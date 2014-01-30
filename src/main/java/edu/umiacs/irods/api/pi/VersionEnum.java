@@ -21,7 +21,8 @@ public enum VersionEnum
     RODS2_3("rods2.3", "d"),
     RODS2_4("rods2.4", "d"),
     RODS2_4_1("rods2.4.1", "d"),
-    RODS2_5("rods2.5", "d");
+    RODS2_5("rods2.5", "d"),
+    RODS3_2("rods3.2", "d");
     public static final String API_B = "b";
     public static final String API_D = "d";
     public static final String REL_0_9 = "rods0.9";
@@ -35,6 +36,7 @@ public enum VersionEnum
     public static final String REL_2_4 = "rods2.4";
     public static final String REL_2_4_1 = "rods2.4.1";
     public static final String REL_2_5 = "rods2.5";
+    public static final String REL_3_2 = "rods3.2";
     private String relVersion;
     private String apiVersion;
 
@@ -93,7 +95,10 @@ public enum VersionEnum
             {
                 return RODS2_5;
             }
-
+            if (REL_3_2.equals(body.getRelVersion()))
+            {
+                return RODS3_2;
+            }
 
         }
         return null;

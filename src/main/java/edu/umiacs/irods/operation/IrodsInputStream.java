@@ -17,7 +17,8 @@ import edu.umiacs.irods.api.pi.OprTypeEnum;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class IrodsInputStream extends InputStream {
 
-    private static final Logger LOG = Logger.getLogger(IrodsInputStream.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IrodsInputStream.class);
     private IRodsConnection connection;
     int fd;
 

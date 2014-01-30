@@ -9,7 +9,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
 public class RodsUtil
 {
 
-    private static final Logger LOG = Logger.getLogger(RodsUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RodsUtil.class);
     static final int CHALLENGE_LENGTH = 64;
     static final int MAX_PASSWORD_LENGTH = 50;
 

@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Example file for ingesting bulk data into irods
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
 public class BulkFileLoader
 {
 
-    private static final Logger LOG = Logger.getLogger(BulkFileLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BulkFileLoader.class);
     private ConnectOperation connection;
     private IrodsOperations op;
     private String destDir;
