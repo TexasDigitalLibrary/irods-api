@@ -147,7 +147,8 @@ public class IrodsProxyInputStream extends InputStream {
                 // LOG.warn("wrote the file?");
                 fileStream = new FileInputStream(tempFile);
             } else {
-                LOG.warn("File embedded in control channel");
+                LOG.info("File embedded in control channel");
+                fileStream = dataStream;
             }
         } // end if(connection != null)
     }// end open()
