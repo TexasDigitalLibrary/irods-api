@@ -30,8 +30,9 @@ public class InputStreamTest {
                 "rods", "lizard51775", "chron-umiacs");
 
         String file = "/chron-umiacs/home/rods/jj/file-1";///chron-umiacs/home/duracloud/newspace3/northcap.jpg";
+        String tempPath = "/tmp";
 
-        InputStream iis = new IrodsProxyInputStream(file, co.getConnection());
+        InputStream iis = new IrodsProxyInputStream(file, tempPath, co);
         MessageDigest digest = MessageDigest.getInstance("MD5");
         DigestInputStream dis = new DigestInputStream(iis, digest);
         byte[] b = new byte[1040000];

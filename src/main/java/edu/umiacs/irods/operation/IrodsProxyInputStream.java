@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class IrodsProxyInputStream extends InputStream {
 
     private static final Logger LOG = LoggerFactory.getLogger(IrodsProxyInputStream.class);
     private IRodsConnection connection;
+    private IrodsOperations io;
     private int fd;
     private File tempFile = null;
     private static FileOutputStream out;
@@ -52,19 +54,30 @@ public class IrodsProxyInputStream extends InputStream {
     private InputStream fileStream = null;
     private Socket proxyStream = null;
 
-    public IrodsProxyInputStream(String fileName, IRodsConnection connection) throws IOException {
-        this.connection = connection;
-        open(fileName);
+    public IrodsProxyInputStream(String fileName, String tempPath, ConnectOperation co) throws IOException {
+        this.connection = co.getConnection();
+        this.io = new IrodsOperations(co);
+        Path tempFilePath = Paths.get(tempPath);
+        // check path to make sure it's a directory
+        if (Files.isDirectory(tempFilePath)) {
+            // check directory path to make sure we can write to it
+            if (!Files.isWritable(tempFilePath)) {
+                throw new IOException("iRods Temporary File Path is not writeable! Please reconfigure!");
+            }
+        } else {
+            throw new IOException("iRods Temporary File Path is not a directory! Please reconfigure!");
+        }
+        open(fileName, tempFilePath);
     }
 
-    private void open(String fileName) throws IOException {
+    private void open(String fileName, Path tempFilePath) throws IOException {
         IrodsApiRequest apiReq;
         DataObjInp_PI body;
         int status;
         RodsObjStat_PI stat;
 
         if (connection != null) {
-            stat = stat(fileName);
+            stat = io.stat(fileName);
             if (stat.getObjSize() <= 0)
                 return;
 
@@ -113,26 +126,26 @@ public class IrodsProxyInputStream extends InputStream {
                 // calculate real chunk sizes
                 long realChunkSize = (dataSize / threads);
                 long remainderChunkSize = (dataSize % threads);
-                ArrayList<socketRunner> sockets = new ArrayList<socketRunner>();
+                ArrayList<SocketRunner> sockets = new ArrayList<SocketRunner>();
                 // create all the socketRunners
                 for (int i = 0; i < threads; i++) {
-                    sockets.add(new socketRunner(host, port, cookie, dataSize, realChunkSize, remainderChunkSize, this));
+                    sockets.add(new SocketRunner(host, port, cookie, dataSize, realChunkSize, remainderChunkSize, this));
                 }
                 try {
                     // put all the chunks together
                     Path path = Paths.get(fileName);
-                    tempFile = File.createTempFile("iRods", path.getFileName().toString());
+                    tempFile = File.createTempFile("iRods", path.getFileName().toString(), tempFilePath.toFile());
                     LOG.info("iRods saving temp file to: " + tempFile.getPath());
                     // File outFile = new File("out.flv");
                     out = new FileOutputStream(tempFile);
                     ch = out.getChannel();
                     // run all the socketRunners
-                    for (socketRunner socket : sockets) {
+                    for (SocketRunner socket : sockets) {
                         Thread temp = new Thread(socket);
                         temp.start();
                     }
                     // wait for all of them to be done
-                    for (socketRunner socket : sockets) {
+                    for (SocketRunner socket : sockets) {
                         synchronized (socket) {
                             while (!socket.isDone())
                                 ;
@@ -154,7 +167,8 @@ public class IrodsProxyInputStream extends InputStream {
     }// end open()
 
     protected synchronized void writeToFile(long offset, ByteBuffer src) throws IOException {
-        // LOG.info("Writing to file @ offset: " + offset + " dataSize: " + src.capacity());
+        // LOG.info("Writing to file @ offset: " + offset + " dataSize: " +
+        // src.capacity());
         if (ch != null && out != null) {
             ch.position(offset);
             ch.write(src);
@@ -162,8 +176,8 @@ public class IrodsProxyInputStream extends InputStream {
         }
     }
 
-    private static class socketRunner implements Runnable {
-        private static final Logger LOG = LoggerFactory.getLogger(socketRunner.class);
+    private static class SocketRunner implements Runnable {
+        private static final Logger LOG = LoggerFactory.getLogger(SocketRunner.class);
 
         // input variables
         private Socket proxyStream;
@@ -189,7 +203,7 @@ public class IrodsProxyInputStream extends InputStream {
         // flag to know this thread is done
         private boolean done = false;
 
-        public socketRunner(String host, int port, int cookie, long dataSize, long realChunkSize, long remainderChunkSize, IrodsProxyInputStream irodsProxyInputStream) {
+        public SocketRunner(String host, int port, int cookie, long dataSize, long realChunkSize, long remainderChunkSize, IrodsProxyInputStream irodsProxyInputStream) {
             this.host = host;
             this.port = port;
             this.cookie = cookie;
@@ -269,54 +283,6 @@ public class IrodsProxyInputStream extends InputStream {
             return done;
         }
     } // end of static class
-
-    /*
-     * private void openOld(String fileName) throws IOException { IrodsApiRequest apiReq; DataObjInp_PI body; int status; RodsObjStat_PI stat;
-     * 
-     * if (connection != null) { stat = stat(fileName); if (stat.getObjSize() <= 0) return;
-     * 
-     * // -1 is no threading, 0 is let server decide, 1+ is manual setting (0 is the only one that works?) body = new DataObjInp_PI(fileName, 0, 0, 0, stat.getObjSize(), 0, OprTypeEnum.GET_OPR, new KeyValPair_PI((Map) null));
-     * 
-     * apiReq = new IrodsApiRequest(ApiNumberEnum.DATA_OBJ_GET_AN, body, null);
-     * 
-     * status = apiReq.sendRequest(connection); dataStream = apiReq.getResultInputStream(); LOG.warn("DATA_OBJ_GET_AN status: " + status + " for stat(" + stat + ") dataStream[" + dataStream + "]"); // error Opening if (status < 0) { connection = null; throw new IRodsRequestException("Error opening file, error: " + ErrorEnum.valueOf(status));
-     * 
-     * } else if (dataStream == null) { // external data stream PortalOprOut_PI outPI = apiReq.getResultPI(PortalOprOut_PI.class); fd = outPI.getL1descInx();
-     * 
-     * // private DataInputStream is; PortList_PI portlist = outPI.getPortListPI(); int cookie = portlist.getCookie(); int port = portlist.getPortNum(); String host = portlist.getHostAddr();
-     * 
-     * LOG.warn("Received Proxy port for data: " + outPI); if (port == 0 || host.length() == 0) { throw new IOException("Received invalid Proxy port data!"); } proxyStream = new Socket(host, port); OutputStream os = proxyStream.getOutputStream(); DataInputStream is = new DataInputStream(proxyStream.getInputStream()); this.dataStream = is;
-     * 
-     * os.write(RodsUtil.renderInt(cookie)); RodsUtil.readBytes(8, is); long offset = RodsUtil.parseLong(RodsUtil.readBytes(8, is)); if (offset != 0) { throw new IOException("Stream offset is not 0, offset: " + offset); }
-     * 
-     * long totalBytes = RodsUtil.parseLong(RodsUtil.readBytes(8, is)); LOG.warn("Opened Proxy port for data " + host + ":" + port); } else { LOG.warn("File embedded in control channel"); } } }
-     */
-
-    private RodsObjStat_PI stat(String path) throws IRodsRequestException {
-        try {
-
-            DataObjInp_PI inPi = new DataObjInp_PI(path, 0, 0, 0, 0, 0, OprTypeEnum.NO_OPR_TYPE, new KeyValPair_PI((Map<String, String>) null));
-
-            IrodsApiRequest apiReq = new IrodsApiRequest(ApiNumberEnum.OBJ_STAT_AN, inPi, null);
-
-            int status = apiReq.sendRequest(connection);
-
-            if (status == ErrorEnum.USER_FILE_DOES_NOT_EXIST.getInt()) {
-                return null;
-            }
-            if (status < 0) {
-                throw new IRodsRequestException(ErrorEnum.valueOf(status));
-            }
-
-            return apiReq.getResultPI(RodsObjStat_PI.class);
-        } catch (IOException ex) {
-            if (ex instanceof IRodsRequestException) {
-                throw (IRodsRequestException) ex;
-            }
-            throw new IRodsRequestException("Communication error sending request", ex);
-        }
-
-    }
 
     @Override
     public int read(byte[] b) throws IOException {
