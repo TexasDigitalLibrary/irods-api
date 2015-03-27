@@ -298,7 +298,7 @@ public class IrodsProxyInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        throw new UnsupportedOperationException("Inputstream does not allow single char reads");
+        return fileStream.read();
     }
 
     @Override
